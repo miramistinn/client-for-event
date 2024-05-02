@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Список клиентов</title>
+    <style>
+        ul {
+            list-style-type: decimal;
+        }
+    </style>
+</head>
+<body>
+    <h1>Список клиентов</h1>
+    <ul id="clientList"></ul>
+
+    <script>
+        // Функция для выполнения AJAX-запроса
+        function fetchData() {
+            fetch('http://localhost:9090/read/client')
+                .then(response => response.json())
+                .then(clientList => populateList(clientList))
+                .catch(error => console.error('Ошибка получения данных:', error));
+        }
+
+        // Функция для заполнения списка клиентов
+        function populateList(clientList) {
+            var listElement = document.getElementById('clientList');
+            clientList.forEach(client => {
+                var listItem = document.createElement('li');
+                listItem.textContent = `ID: ${client.id}, Email: ${client.email}, Password: ${client.password}, Have Buy: ${client.haveBuy}, Active: ${client.active}`;
+                listElement.appendChild(listItem);
+            });
+        }
+
+        // Выполняем запрос на получение данных при загрузке страницы
+        window.onload = fetchData;
+    </script>
+</body>
+</html>
