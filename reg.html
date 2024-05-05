@@ -45,6 +45,7 @@
         </ul>
     </header>
 </div>
+<div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
 <div class="reg">
     <h2>Регистрация</h2>
     <form id="registrationForm">
@@ -59,7 +60,13 @@
         <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
     </form>
 </div>
+<div class="mt-3">
+    <button type="button" class="btn btn-secondary" onclick="redirectToLogin()">Авторизация</button>
+</div>
 <script>
+    function redirectToLogin() {
+        window.location.href = "log.html";
+    }
     // Функция для обработки отправки формы
     function submitForm(event) {
         event.preventDefault(); // Предотвращаем отправку формы по умолчанию
@@ -74,26 +81,28 @@
             password: password
         };
 
-        // Отправляем POST-запрос на сервер
         fetch('http://localhost:9090/create', {
-            mode: 'no-cors',
-            method: "post",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(result => {
-            // Обработка ответа от сервера после успешной регистрации
-            console.log(result);
-            // Перенаправление на страницу "reg.html"
-            window.location.href = "about.html";
-        })
-        .catch(error => {
-            // Обработка ошибки при отправке запроса
-            console.error('Error:', error);
-        });
+    // mode: 'no-cors',
+    method: "post",
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+})
+.then(response => response.json())              
+            .then(result => {
+                // Обработка ответа от сервера после успешной отправки данных
+                console.log(result);
+                // Ваш код для дальнейшей обработки
+                window.location.href = "about.html";
+            })
+            .catch(error => {
+    // Обработка ошибки при отправке запроса
+    console.error('Error:', error);
+    var errorMessageElement = document.getElementById('errorMessage');
+    errorMessageElement.innerText = 'Пользователь с таким ником уже существует.';
+    errorMessageElement.style.display = 'block';
+});
     }
 
     // Получаем форму по ее ID
