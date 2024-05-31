@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Заявка</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+
+      #applicationTable {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header
+        class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom"
+      >
+        <a
+          href="/"
+          class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+        >
+          <img src="images/img_1.png" width="150" height="40" alt="Картинка" />
+        </a>
+
+        <ul class="nav nav-pills">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Пользователи
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/users.html">Пользователи</a>
+              <a class="dropdown-item" href="/admins.html">Администраторы</a>
+              <a class="dropdown-item" href="/addAdmin.html"
+                >Добавление администратора</a
+              >
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Заявки
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/applications.html">Заявки</a>
+              <a class="dropdown-item" href="/addApl.html">Добавление заявки</a>
+            </div>
+          </li>
+          <li class="nav-item"><a href="ab" class="nav-link">Отчеты</a></li>
+          <li class="nav-item">
+            <a href="/log.html" class="nav-link">Аккаунт</a>
+          </li>
+        </ul>
+      </header>
+
+    
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="text-align: center; font-weight: bold;"><h1 style="text-align: center;">Расписание</h1></span>
+<ul style="list-style-type: none; display: flex; gap: 20px;">
+    <li><button id="baseInfoButton" class="dropdown-item">Базая информация</button></li>
+    <li><button id="smetaButton" class="dropdown-item">Смета</button></li>
+    <li><button id="scheduleButton" class="dropdown-item">Расписание</button></li>
+  </ul>
+      </div>
+    </div>
+    <div class="container">
+        <form id="SheduleForm">
+            <div class="mb-3">
+                <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Сохранить</button>
+        </form>
+    </div>
+    <script>
+         const url = new URL(window.location.href);
+  const id = url.searchParams.get('id');
+  console.log('URL:', url);
+console.log('ID:', id);
+const baseInfoButton = document.getElementById('baseInfoButton');
+const smetaButton = document.getElementById('smetaButton');
+const scheduleButton = document.getElementById('scheduleButton');
+
+baseInfoButton.addEventListener('click', () => {
+  window.location.href = `/treatment.base.html?id=${id}`;
+});
+
+smetaButton.addEventListener('click', () => {
+  window.location.href = `/treatment.smeta.html?id=${id}`;
+});
+
+scheduleButton.addEventListener('click', () => {
+  window.location.href = `/treatment.schedule.html?id=${id}`;
+});
+       
+function submitForm(event) {
+            event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+            // Получаем значения полей формы
+            var rejectReason = document.getElementById('rejectReason').value;
+
+            // Создаем объект с данными для отправки на сервер
+            var data = {
+                id: id,
+                shedule: rejectReason
+            };
+
+            // Отправляем POST-запрос на сервер
+            fetch('http://localhost:9090/treatment/shedule', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // window.location.href = '/applications.html';
+                } else {
+                    throw new Error('Ошибка при отправке формы');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при отправке формы:', error);
+                // Обработка ошибки при отправке формы
+            });
+        }
+
+        // Получаем форму по ее ID
+        var form = document.getElementById('SheduleForm');
+        // Назначаем обработчик события отправки формы
+        form.addEventListener('submit', submitForm);
+      </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>

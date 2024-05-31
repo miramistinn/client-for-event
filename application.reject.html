@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отклонение заявки</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+        }
+        #applicationTable {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img src="images/img_1.png" width="150" height="40" alt="Картинка">
+            </a>
+    
+            <ul class="nav nav-pills">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Пользователи
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/users.html">Пользователи</a>
+                        <a class="dropdown-item" href="/admins.html">Администраторы</a>
+                        <a class="dropdown-item" href="/addAdmin.html">Добавление администратора</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Заявки
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/applications.html">Заявки</a>
+                        <a class="dropdown-item" href="/addApl.html">Добавление заявки</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="/report" class="nav-link">Отчеты</a></li>
+                <li class="nav-item"><a href="/log.html" class="nav-link">Аккаунт</a></li>
+            </ul>
+        </header>
+    </div>
+   
+     <div class="container">
+        <h1>Отклонение заявки</h1>
+        <table class="table" id="applicationTable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td id="application-id"></td>
+                <td id="application-name"></td>
+                <td id="application-description"></td>
+                <td id="application-status"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="container">
+        <form id="rejectForm">
+            <div class="mb-3">
+                <label for="rejectReason" class="form-label">Причина отклонения:</label>
+                <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Отклонить</button>
+            <a href="/applications.html" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const applicationId = urlParams.get('id');
+
+        // Отправка запроса на сервер для получения информации о заявке
+        fetch(`http://localhost:9090/application/readByID/${applicationId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Failed to fetch application data');
+            }
+        })
+        .then(data => {
+            // Заполнение HTML-элементов информацией о заявке
+            const applicationIdElement = document.getElementById('application-id');
+            const nameElement = document.getElementById('application-name');
+            const descriptionElement = document.getElementById('application-description');
+            const statusElement = document.getElementById('application-status');
+
+            applicationIdElement.textContent = data.id;
+            nameElement.textContent = data.name;
+            descriptionElement.textContent = data.comments;
+            statusElement.textContent = data.status;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Обработка ошибки
+        });
+
+        // Функция для обработки отправки формы
+        function submitForm(event) {
+            event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+            // Получаем значения полей формы
+            var rejectReason = document.getElementById('rejectReason').value;
+
+            // Создаем объект с данными для отправки на сервер
+            var data = {
+                id: applicationId,
+                commentByAdmin: rejectReason
+            };
+
+            // Отправляем POST-запрос на сервер
+            fetch('http://localhost:9090/application/reject', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // window.location.href = '/applications.html';
+                } else {
+                    throw new Error('Ошибка при отправке формы');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при отправке формы:', error);
+                // Обработка ошибки при отправке формы
+            });
+        }
+
+        // Получаем форму по ее ID
+        var form = document.getElementById('rejectForm');
+        // Назначаем обработчик события отправки формы
+        form.addEventListener('submit', submitForm);
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+</body>
+</html>

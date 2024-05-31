@@ -70,10 +70,10 @@
             </a>
     
             <ul class="nav nav-pills">
-                <li class="nav-item"><a href="/home" class="nav-link" aria-current="page">Главная</a></li>
-                <li class="nav-item"><a href="con.html" class="nav-link">Контакты</a></li>
+                <li class="nav-item"><a href="home.html" class="nav-link" aria-current="page">Главная</a></li>
+                <li class="nav-item"><a href="contacs.html" class="nav-link">Контакты</a></li>
                 <li class="nav-item"><a href="about.html" class="nav-link ">О нас</a></li>
-                <li class="nav-item"><a href="reg.html" Регистрация class="nav-link">Аккаунт</a></li>
+                <li class="nav-item"><a href="account.html" Регистрация class="nav-link">Аккаунт</a></li>
             </ul>
         </header>
     </div>
@@ -122,17 +122,18 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())              
-            .then(result => {
-                // Обработка ответа от сервера после успешной отправки данных
-                console.log(result);
-                // Ваш код для дальнейшей обработки
-                window.location.href = "about.html";
-            })
-            .catch(error => {
-                // Обработка ошибки при отправке запроса
-                console.error('Error:', error);
-            });
+            .then(response => {
+            if (response.ok) {
+                window.location.href = 'home.html';
+            } else {
+                throw new Error('Ошибка при отправке формы');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при отправке формы:', error);
+            // Обработка ошибки при отправке формы
+        });
+         
         }
     
         // Получаем форму по ее ID
