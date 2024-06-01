@@ -15,6 +15,27 @@
       #applicationTable {
         color: white;
       }
+
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 30%;
+        color: black;
+      }
     </style>
   </head>
   <body>
@@ -74,83 +95,103 @@
         </ul>
       </header>
 
-    
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <span style="text-align: center; font-weight: bold;"><h1 style="text-align: center;">Расписание</h1></span>
-<ul style="list-style-type: none; display: flex; gap: 20px;">
-    <li><button id="baseInfoButton" class="dropdown-item">Базая информация</button></li>
-    <li><button id="smetaButton" class="dropdown-item">Смета</button></li>
-    <li><button id="scheduleButton" class="dropdown-item">Расписание</button></li>
-  </ul>
+        <ul style="list-style-type: none; display: flex; gap: 20px;">
+          <li><button id="baseInfoButton" class="dropdown-item">Базая информация</button></li>
+          <li><button id="smetaButton" class="dropdown-item">Смета</button></li>
+          <li><button id="scheduleButton" class="dropdown-item">Расписание</button></li>
+        </ul>
       </div>
     </div>
     <div class="container">
-        <form id="SheduleForm">
-            <div class="mb-3">
-                <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-danger">Сохранить</button>
-        </form>
+      <form id="SheduleForm">
+        <div class="mb-3">
+          <textarea class="form-control" id="rejectReason" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-danger">Сохранить</button>
+      </form>
     </div>
-    <script>
-         const url = new URL(window.location.href);
-  const id = url.searchParams.get('id');
-  console.log('URL:', url);
-console.log('ID:', id);
-const baseInfoButton = document.getElementById('baseInfoButton');
-const smetaButton = document.getElementById('smetaButton');
-const scheduleButton = document.getElementById('scheduleButton');
 
-baseInfoButton.addEventListener('click', () => {
-  window.location.href = `/treatment.base.html?id=${id}`;
-});
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <h2>Расписание успешно сохранено</h2>
+        <button id="closeModal">Закрыть</button>
+      </div>
+    </div>
 
-smetaButton.addEventListener('click', () => {
-  window.location.href = `/treatment.smeta.html?id=${id}`;
-});
+    <scriconst url = new URL(window.location.href);
+      const id = url.searchParams.get('id');pt>
+      
+      console.log('URL:', url);
+      console.log('ID:', id);
 
-scheduleButton.addEventListener('click', () => {
-  window.location.href = `/treatment.schedule.html?id=${id}`;
-});
-       
-function submitForm(event) {
-            event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+      const baseInfoButton = document.getElementById('baseInfoButton');
+      const smetaButton = document.getElementById('smetaButton');
+      const scheduleButton = document.getElementById('scheduleButton');
 
-            // Получаем значения полей формы
-            var rejectReason = document.getElementById('rejectReason').value;
+      baseInfoButton.addEventListener('click', () => {
+        window.location.href = `/treatment.base.html?id=${id}`;
+      });
 
-            // Создаем объект с данными для отправки на сервер
-            var data = {
-                id: id,
-                shedule: rejectReason
-            };
+      smetaButton.addEventListener('click', () => {
+        window.location.href = `/treatment.smeta.html?id=${id}`;
+      });
 
-            // Отправляем POST-запрос на сервер
-            fetch('http://localhost:9090/treatment/shedule', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (response.ok) {
-                    // window.location.href = '/applications.html';
-                } else {
-                    throw new Error('Ошибка при отправке формы');
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при отправке формы:', error);
-                // Обработка ошибки при отправке формы
+      scheduleButton.addEventListener('click', () => {
+        window.location.href = `/treatment.schedule.html?id=${id}`;
+      });
+
+      function submitForm(event) {
+        event.preventDefault();
+
+        const rejectReason = document.getElementById('rejectReason').value;
+
+        const data = {
+          id: id,
+          shedule: rejectReason
+        };
+
+        fetch('http://localhost:9090/treatment/shedule', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        })
+        .then(response => {
+          if (response.ok) {
+            // Show the success modal
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+
+            const closeModal = document.getElementById('closeModal');
+            closeModal.addEventListener('click', () => {
+              modal.style.display = 'none';
             });
-        }
+          } else {
+            throw new Error('Ошибка при отправке формы');
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка при отправке формы:', error);
+        });
+      }
 
-        // Получаем форму по ее ID
-        var form = document.getElementById('SheduleForm');
-        // Назначаем обработчик события отправки формы
-        form.addEventListener('submit', submitForm);
-      </script>
+      const form = document.getElementById('SheduleForm');
+      form.addEventListener('submit', submitForm);
+
+      // Fetch the schedule and populate the textarea
+      fetch(`http://localhost:9090/treatment/read/shedule?id=${id}`)
+        .then(response => response.text())
+        .then(schedule => {
+          document.getElementById('rejectReason').value = schedule;
+        })
+        .catch(error => {
+          console.error('Ошибка при загрузке расписания:', error);
+        });
+    </scriconst>
+
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>

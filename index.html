@@ -1,11 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    
-</body>
+<html>
+  <head>
+    <title>Заявка</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background-color: black;
+        color: white;
+      }
+
+      #applicationTable {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header
+        class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom"
+      >
+        <a
+          href="/"
+          class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+        >
+          <img src="images/img_1.png" width="150" height="40" alt="Картинка" />
+        </a>
+
+        <ul class="nav nav-pills">
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Пользователи
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/users.html">Пользователи</a>
+              <a class="dropdown-item" href="/admins.html">Администраторы</a>
+              <a class="dropdown-item" href="/addAdmin.html"
+                >Добавление администратора</a
+              >
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Заявки
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="/applications.html">Заявки</a>
+              <a class="dropdown-item" href="/addApl.html">Добавление заявки</a>
+            </div>
+          </li>
+          <li class="nav-item"><a href="ab" class="nav-link">Отчеты</a></li>
+          <li class="nav-item">
+            <a href="/log.html" class="nav-link">Аккаунт</a>
+          </li>
+        </ul>
+      </header>
+    </div>
+
+    <table id="product-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <select id="new-category"></select>
+          </td>
+          <td>
+            <input type="text" placeholder="Enter product name" />
+          </td>
+          <td>
+            <input type="number" placeholder="Enter price" />
+          </td>
+          <td>
+            <button>Save</button>
+          </td>
+        </tr>
+        <!-- Строки с данными будут добавляться динамически -->
+      </tbody>
+    </table>
+
+    <script>
+        //вся работа с категориями
+      // Массив с категориями
+      const categories = ['Еда', 'Категория 2', 'Категория 3', 'Категория 4', 'Категория 5'];
+
+// Получаем ссылку на элемент <select>
+const newCategorySelect = document.getElementById('new-category');
+
+// Проходим по массиву categories и создаем <option> для каждого элемента
+categories.forEach(category => {
+  const option = document.createElement('option');
+  option.value = category;
+  option.text = category;
+  newCategorySelect.add(option);
+});
+
+// Функция для создания строки таблицы
+function createTableRow(product) {
+  const row = document.createElement('tr');
+
+  // Создание выпадающего списка для категории
+  const categoryCell = document.createElement('td');
+  const categorySelect = document.createElement('select');
+  categorySelect.id = `category-${product.categoryId}`;
+  categories.forEach((category) => {
+    const option = document.createElement('option');
+    option.value = category.id;
+    option.text = category.name;
+    categorySelect.add(option);
+  });
+  categoryCell.appendChild(categorySelect);
+  row.appendChild(categoryCell);
+
+  // Добавление ячейки с названием
+  const nameCell = document.createElement('td');
+  nameCell.textContent = product.name;
+  row.appendChild(nameCell);
+
+  // Добавление ячейки с ценой
+  const priceCell = document.createElement('td');
+  priceCell.textContent = product.price.toFixed(2);
+  row.appendChild(priceCell);
+
+  // Добавление ячейки с кнопками
+  const actionsCell = document.createElement('td');
+  const editButton = document.createElement('button');
+  editButton.textContent = 'Edit';
+  editButton.addEventListener('click', () => {
+    // Обработчик события для кнопки "Edit"
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = product.name;
+    nameCell.innerHTML = '';
+    nameCell.appendChild(nameInput);
+
+    const priceInput = document.createElement('input');
+    priceInput.type = 'number';
+    priceInput.value = product.price;
+    priceCell.innerHTML = '';
+    priceCell.appendChild(priceInput);
+
+    const saveEditButton = document.createElement('button');
+    saveEditButton.textContent = 'Save';
+    saveEditButton.addEventListener('click', () => {
+      // Обработчик события для кнопки "Save"
+      product.name = nameInput.value;
+      product.price = parseFloat(priceInput.value);
+      nameCell.textContent = product.name;
+      priceCell.textContent = product.price.toFixed(2);
+      actionsCell.innerHTML = '';
+      const editButton = document.createElement('button');
+      editButton.textContent = 'Edit';
+      editButton.addEventListener('click', () => {
+        // Обработчик события для новой кнопки "Edit"
+        // ...
+      });
+      const deleteButton = document.createElement('button');
+      deleteButton.textContent = 'Delete';
+      deleteButton.addEventListener('click', () => {
+        // Обработчик события для кнопки "Delete"
+        // ...
+      });
+      actionsCell.appendChild(editButton);
+      actionsCell.appendChild(deleteButton);
+    });
+    actionsCell.innerHTML = '';
+    actionsCell.appendChild(saveEditButton);
+  });
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.addEventListener('click', () => {
+    // Обработчик события для кнопки "Delete"
+    // ...
+  });
+  actionsCell.appendChild(editButton);
+  actionsCell.appendChild(deleteButton);
+  row.appendChild(actionsCell);
+
+  return row;
+}
+const url = new URL(window.location.href);
+      const id = url.searchParams.get('id');
+    // Получаем ссылку на таблицу
+const tableBody = document.querySelector('#product-table tbody');
+
+// Делаем запрос на сервер за списком смет
+fetch(`http://localhost:9090/treatment/read/smeta?id=${id}`) 
+  .then(response => response.json())
+  .then(smetas => {
+    // Очищаем текущие строки в таблице
+    tableBody.innerHTML = '';
+
+    // Добавляем новые строки на основе полученных данных
+    smetas.forEach(smeta => {
+      const row = createTableRow(smeta);
+      tableBody.appendChild(row);
+    });
+  })
+  .catch(error => {
+    console.error('Ошибка получения смет:', error);
+  });
+
+// Функция для создания строки таблицы на основе объекта Smeta
+function createTableRow(smeta) {
+  const row = document.createElement('tr');
+
+  // Создаем ячейки для каждого поля Smeta
+  const categoryCell = document.createElement('td');
+  categoryCell.textContent = smeta.category;
+
+  const nameCell = document.createElement('td');
+  nameCell.textContent = smeta.name;
+
+  const priceCell = document.createElement('td');
+  priceCell.textContent = smeta.price.toFixed(2);
+
+  const actionCell = document.createElement('td');
+  const saveButton = document.createElement('button');
+  saveButton.textContent = 'Save';
+  actionCell.appendChild(saveButton);
+
+  // Добавляем ячейки в строку
+  row.appendChild(categoryCell);
+  row.appendChild(nameCell);
+  row.appendChild(priceCell);
+  row.appendChild(actionCell);
+
+  return row;
+}
+    </script>
+  </body>
 </html>

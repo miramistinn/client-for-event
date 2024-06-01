@@ -111,7 +111,7 @@
 
 async function handleOformitButtonClick(applicationId) {
     try {
-        const response = await fetch(`http://localhost:9090/create/treatment/${applicationId}`, {
+        const response = await fetch(  `http://localhost:9090/create/treatment/${applicationId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
