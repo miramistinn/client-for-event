@@ -105,29 +105,27 @@
         .catch(error => {
           console.error('Ошибка при получении данных:', error);
         });
-
       // Обработчик события для кнопки "Save"
       const saveNewProductButton = document.getElementById('save-new-product');
       saveNewProductButton.addEventListener('click', () => {
         const newCategory = document.getElementById('new-category').value;
         const newName = document.getElementById('new-name').value;
         const newPrice = document.getElementById('new-price').value;
+      
         console.log(id)
-        var data = {
+        var dat = {
     category: newCategory,
     name: newName,
-    TreatmentId: id,
     expenses: newPrice
             };
-            console.log(id)
-    
+            console.log("try")
             // Отправляем POST-запрос на сервер
-            fetch('http://localhost:9090/treatment/create/smeta', {
+            fetch(`http://localhost:9090/treatment/create/smeta?id=${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(dat)
             })
             .then(response => {
             if (response.ok) {  window.location.reload();
@@ -139,6 +137,7 @@
             console.error('Ошибка создания', error);
         });        console.log('New product:', { category: newCategory, name: newName, price: newPrice });
       });
+    
       function editProduct(product) {
   // Найти строку, которую нужно редактировать
   const row = Array.from(tbody.children).find(
